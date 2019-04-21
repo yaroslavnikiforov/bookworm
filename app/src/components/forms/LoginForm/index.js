@@ -6,10 +6,8 @@
 
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-
 import { isEmpty } from "lodash";
 import { Form, Button } from "semantic-ui-react";
-
 import Validator from "validator";
 import InlineError from "../../messages/InlineError";
 
