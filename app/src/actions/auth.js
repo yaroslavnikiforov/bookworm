@@ -6,5 +6,17 @@ export const userLoggedIn = user => ({
   user
 });
 
+export const userLoggedOut = () => ({
+  type: types.USER_LOGGED_OUT
+});
+
 export const login = credentials => dispatch =>
-  api.user.login(credentials).then(user => dispatch(userLoggedIn(user)));
+  api.user.login(credentials).then(user => {
+    localStorage.bookwormJWT = user.token;
+    dispatch(userLoggedIn(user));
+  });
+
+export const logout = () => dispatch => {
+  localStorage.removeItem("bookwormJWT");
+  dispatch(userLoggedOut());
+};
