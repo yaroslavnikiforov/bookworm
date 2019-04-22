@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { Form, Button } from "semantic-ui-react";
 import { isEmpty } from "lodash";
-import { Form, Button, Message } from "semantic-ui-react";
 import isEmail from "validator/lib/isEmail";
 import InlineError from "../../messages/InlineError";
 
-class LoginForm extends Component {
+class SignupForm extends Component {
   static propTypes = {
     submit: PropTypes.func.isRequired
   };
@@ -67,13 +67,6 @@ class LoginForm extends Component {
 
     return (
       <Form onSubmit={this.onSubmit} loading={loading}>
-        {errors.global && (
-          <Message negative>
-            <Message.Header>Something went wrong</Message.Header>
-            <p>{errors.global}</p>
-          </Message>
-        )}
-
         <Form.Field error={Boolean(errors.email)}>
           <label htmlFor="email">Email</label>
 
@@ -104,10 +97,10 @@ class LoginForm extends Component {
           {errors.password && <InlineError text={errors.password} />}
         </Form.Field>
 
-        <Button primary>Login</Button>
+        <Button primary>Sign Up</Button>
       </Form>
     );
   }
 }
 
-export default LoginForm;
+export default SignupForm;
