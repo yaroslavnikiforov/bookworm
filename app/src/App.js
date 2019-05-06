@@ -62,7 +62,6 @@ const App = ({ location, isAuthenticated }) => (
       exact
       path="/books/new"
       component={NewBookPage}
-      component={NewBookPage}
     />
   </div>
 );

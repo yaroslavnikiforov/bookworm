@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { Segment } from "semantic-ui-react";
+import SearchBookForm from "../../forms/SearchBookForm";
 
 class NewBookPage extends Component {
   static propTypes = {};
@@ -8,7 +10,12 @@ class NewBookPage extends Component {
   };
 
   render() {
-    return <div />;
+    return (
+      <Segment>
+        <h1>Add new book to your collection</h1>
+        <SearchBookForm />
+      </Segment>
+    );
   }
 }
 
