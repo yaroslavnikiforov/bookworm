@@ -11,6 +11,7 @@ import * as serviceWorker from "./serviceWorker";
 import App from "./App";
 import rootReducer from "./reducers/rootReducer";
 import { userLoggedIn } from "./actions/auth";
+import setAuthorizationHeader from "./utils/setAuthorizationHeader";
 import "./index.css";
 
 const store = createStore(
@@ -26,6 +27,7 @@ if (localStorage.bookwormJWT) {
     confirmed: payload.confirmed
   };
 
+  setAuthorizationHeader(localStorage.bookwormJWT);
   store.dispatch(userLoggedIn(user));
 }
 

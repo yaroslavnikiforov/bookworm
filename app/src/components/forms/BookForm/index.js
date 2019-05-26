@@ -10,7 +10,7 @@ class BookForm extends Component {
   static propTypes = {
     submit: PropTypes.func.isRequired,
     book: PropTypes.shape({
-      goodreadsId: PropTypes.number.isRequired,
+      goodreadsId: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
       author: PropTypes.string.isRequired,
       covers: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,

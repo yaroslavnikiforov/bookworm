@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import { Form, Dropdown } from "semantic-ui-react";
-import { debounce } from "lodash";
 
 class SearchBookForm extends Component {
   static propTypes = {
@@ -16,9 +15,13 @@ class SearchBookForm extends Component {
   };
 
   onSearchChange = (e, data) => {
-    this.setState({ query: data.searchQuery }, () =>
-      this.fetchOptions(this.state.query)
-    );
+    clearTimeout(this.timer);
+
+    this.setState({
+      query: data.searchQuery
+    });
+
+    this.timer = setTimeout(this.fetchOptions, 1000);
   };
 
   onChange = (e, data) => {
@@ -27,37 +30,28 @@ class SearchBookForm extends Component {
     this.props.onBookSelect(this.state.books[data.value]);
   };
 
-  fetchOptions = debounce(
-    query => {
-      if (query) {
-        this.setState({ loading: true });
+  fetchOptions = () => {
+    const { query } = this.state;
 
-        axios
-          .get(`/api/books/search?q=${query}`)
-          .then(res => res.data.books)
-          .then(books => {
-            const options = [];
-            const booksHash = {};
-
-            books.forEach(book => {
-              booksHash[book.title] = book;
-              options.push({
-                key: book.goodreadsId,
-                value: book.title,
-                text: book.title
-              });
-
-              this.setState({ loading: false, options, books: booksHash });
-            });
+    if (!query) return;
+    this.setState({ loading: true });
+    axios
+      .get(`/api/books/search?q=${query}`)
+      .then(res => res.data.books)
+      .then(books => {
+        const options = [];
+        const booksHash = {};
+        books.forEach(book => {
+          booksHash[book.title] = book;
+          options.push({
+            key: book.goodreadsId,
+            value: book.title,
+            text: book.title
           });
-      }
-    },
-    1000,
-    {
-      leading: true,
-      trailing: false
-    }
-  );
+        });
+        this.setState({ loading: false, options, books: booksHash });
+      });
+  };
 
   render() {
     const { query, loading, options } = this.state;
