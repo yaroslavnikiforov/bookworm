@@ -21,6 +21,7 @@
     "prettier": "^1.17.0"
   },
   "dependencies": {
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "bcrypt": "^3.0.6",
     "bluebird": "^3.5.4",
     "body-parser": "^1.18.3",

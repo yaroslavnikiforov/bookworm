@@ -2,17 +2,28 @@ import express from "express";
 import request from "request-promise";
 import { parseString } from "xml2js";
 import authenticate from "../middlewares/authenticate";
-var rp = require("request-promise");
+import parseErrors from "../utils/parseErrors";
+import Books from "../models/Book";
 
 const router = express.Router();
 router.use(authenticate);
 
+router.get("/", (req, res) => {
+  Book.find({ userId: req.currentUser._id }).then(books => json({ books }));
+});
+
+router.post("/", (req, res) => {
+  Book.create({ ...req.body.book, userId: req.currentUser._id })
+    .then(book => res.json({ book }))
+    .catch(err => res.status(400).json({ errors: parseErrors(err.errors) }));
+});
+
 router.get("/search", (req, res) => {
   request
     .get(
-      `https://www.goodreads.com/search/index.xml?key=zTPSCDePMIbin6rZi757Xw&q=${
-        req.query.q
-      }`
+      `https://www.goodreads.com/search/index.xml?key=${
+        process.env.GOODREADS_KEY
+      }&q=${req.query.q}`
     )
     .then(result =>
       parseString(result, (err, goodreadsResult) =>
@@ -28,38 +39,25 @@ router.get("/search", (req, res) => {
         })
       )
     );
-  /*res.json({
-    books: [
-      {
-        goodreadsId: 1,
-        title: "Rich Dad Poor Dad",
-        author: "Robert Kiyosaki",
-        covers: [
-          "https://www-konga-com-res.cloudinary.com/w_auto,f_auto,fl_lossy,dpr_auto,q_auto/media/catalog/product/R/i/Rich-Dad-Poor-Dad-3988701.jpg",
-          "https://images-na.ssl-images-amazon.com/images/I/51zcMqY7GQL._SX331_BO1,204,203,200_.jpg"
-        ],
-        pages: 278
-      },
-      {
-        goodreadsId: 2,
-        title: "Cashflow Quadrant",
-        author: "Robert Kiyosaki",
-        covers: [
-          "http://t1.gstatic.com/images?q=tbn:ANd9GcRMJwpm1gcuBKTZhV92k3IA3aNrusUJ5uGOJR3klEeJlOrBTcBb"
-        ],
-        pages: 372
-      },
-      {
-        goodreadsId: 3,
-        title: "Think And Grow Rich",
-        author: "Napoleon Hill",
-        covers: [
-          "https://images-na.ssl-images-amazon.com/images/I/51Uw5tYiqsL.jpg"
-        ],
-        pages: 300
-      }
-    ]
-  });*/
+});
+
+router.get("/fetchPages", (req, res) => {
+  const goodreadsId = req.query.goodreadsId;
+
+  request
+    .get(
+      `https://www.goodreads.com/book/show.xml?key=${
+        process.env.GOODREADS_KEY
+      }&id=${goodreadsId}`
+    )
+    .then(result =>
+      parseString(result, (err, goodreadsResult) => {
+        const numPages = goodreadsResult.GoodreadsResponse.book[0].num_pages[0];
+        const pages = numPages ? Number(numPages) : 0;
+
+        res.json({ pages });
+      })
+    );
 });
 
 export default router;

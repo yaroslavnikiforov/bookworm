@@ -14,7 +14,7 @@ class BookForm extends Component {
       title: PropTypes.string.isRequired,
       author: PropTypes.string.isRequired,
       covers: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-      pages: PropTypes.number.isRequired
+      pages: PropTypes.number
     }).isRequired
   };
 
@@ -25,7 +25,6 @@ class BookForm extends Component {
 
   static getDerivedStateFromProps(props, state) {
     if (props.book !== state.data) {
-      console.log("sayonara");
       return {
         data: props.book,
         coverIndex: DEFAULT_COVER_INDEX
@@ -82,7 +81,7 @@ class BookForm extends Component {
     const errors = {};
 
     if (!data.title) errors.title = "Can't be blank";
-    if (!data.authors) errors.authors = "Can't be blank";
+    if (!data.author) errors.author = "Can't be blank";
     if (!data.pages) errors.pages = "Can't be blank";
 
     return errors;
@@ -90,6 +89,8 @@ class BookForm extends Component {
 
   render() {
     const { data, coverIndex, errors, loading } = this.state;
+
+    console.log(data.pages);
 
     return (
       <Segment>
@@ -131,11 +132,12 @@ class BookForm extends Component {
                   <label htmlFor="title">Book pages</label>
 
                   <input
-                    type="number"
+                    disabled={data.pages === undefined}
+                    type="text"
                     id="pages"
                     name="pages"
                     placeholder="Pages"
-                    value={data.pages}
+                    value={data.pages !== undefined ? data.pages : "Loading..."}
                     onChange={this.onChangeNumber}
                   />
 
