@@ -90,8 +90,6 @@ class BookForm extends Component {
   render() {
     const { data, coverIndex, errors, loading } = this.state;
 
-    console.log(data.pages);
-
     return (
       <Segment>
         <Form onSubmit={this.onSubmit} loading={loading}>

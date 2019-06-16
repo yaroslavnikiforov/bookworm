@@ -1,30 +1,43 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import ConfirmEmailMessage from "../../messages/ConfirmEmailMessage";
 import AddBookCta from "../../ctas/AddBookCta";
-import { allBooksSelector } from "../../../reducers/selectors";
+import { allBooksSelector } from "../../../reducers/books";
+import { fetchBooks } from "../../../actions/books";
 
-const DashboardPage = ({ isConfirmed, books }) => (
-  <div>
-    {!isConfirmed ? <ConfirmEmailMessage /> : null}
+class DashboardPage extends Component {
+  static propTypes = {
+    isConfirmed: PropTypes.bool.isRequired,
+    fetchBooks: PropTypes.func.isRequired,
+    books: PropTypes.arrayOf(
+      PropTypes.shape({
+        title: PropTypes.string.isRequired
+      }).isRequired
+    ).isRequired
+  };
 
-    {books.length === 0 && <AddBookCta />}
-  </div>
-);
+  componentDidMount = () => this.props.fetchBooks();
 
-DashboardPage.propTypes = {
-  isConfirmed: PropTypes.bool.isRequired,
-  books: PropTypes.arrayOf(
-    PropTypes.shape({
-      title: PropTypes.string.isRequired
-    }).isRequired
-  ).isRequired
-};
+  render() {
+    const { isConfirmed, books } = this.props;
+
+    return (
+      <div>
+        {!isConfirmed ? <ConfirmEmailMessage /> : null}
+
+        {books.length === 0 ? <AddBookCta /> : <p>you have saved books</p>}
+      </div>
+    );
+  }
+}
 
 const mapStateToProps = state => ({
   isConfirmed: Boolean(state.user.confirmed),
   books: allBooksSelector(state)
 });
 
-export default connect(mapStateToProps)(DashboardPage);
+export default connect(
+  mapStateToProps,
+  { fetchBooks }
+)(DashboardPage);

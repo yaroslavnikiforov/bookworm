@@ -3,13 +3,13 @@ import request from "request-promise";
 import { parseString } from "xml2js";
 import authenticate from "../middlewares/authenticate";
 import parseErrors from "../utils/parseErrors";
-import Books from "../models/Book";
+import Book from "../models/Book";
 
 const router = express.Router();
 router.use(authenticate);
 
 router.get("/", (req, res) => {
-  Book.find({ userId: req.currentUser._id }).then(books => json({ books }));
+  Book.find({ userId: req.currentUser._id }).then(books => res.json({ books }));
 });
 
 router.post("/", (req, res) => {
@@ -21,9 +21,7 @@ router.post("/", (req, res) => {
 router.get("/search", (req, res) => {
   request
     .get(
-      `https://www.goodreads.com/search/index.xml?key=${
-        process.env.GOODREADS_KEY
-      }&q=${req.query.q}`
+      `https://www.goodreads.com/search/index.xml?key=${process.env.GOODREADS_KEY}&q=${req.query.q}`
     )
     .then(result =>
       parseString(result, (err, goodreadsResult) =>
@@ -46,9 +44,7 @@ router.get("/fetchPages", (req, res) => {
 
   request
     .get(
-      `https://www.goodreads.com/book/show.xml?key=${
-        process.env.GOODREADS_KEY
-      }&id=${goodreadsId}`
+      `https://www.goodreads.com/book/show.xml?key=${process.env.GOODREADS_KEY}&id=${goodreadsId}`
     )
     .then(result =>
       parseString(result, (err, goodreadsResult) => {
